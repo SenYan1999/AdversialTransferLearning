@@ -39,9 +39,9 @@ class OverallModel(nn.Module):
     def evaluate(self, task_pred, encoding, out_ner_mask, task_truth, ner_truth):
         # domain classifier
         domain_pred = torch.argmax(task_pred, dim=-1)
-        domain_acc = (domain_pred == task_truth) / task_truth.shape[0]
+        domain_acc = torch.sum(domain_pred == task_truth) / task_truth.shape[0]
 
         # ner model
         ner_acc, ner_f1 = 0, 0
 
-        return (domain_acc, ner_acc, ner_f1)
+        return (domain_acc.item(), ner_acc, ner_f1)

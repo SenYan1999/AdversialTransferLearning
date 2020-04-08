@@ -1,4 +1,3 @@
- 
 import torch
 import torch.nn.functional as F
 import numpy as np
@@ -51,7 +50,7 @@ class Trainer:
             domain_loss, ner_loss, combine_loss = self.overall_model.loss_fn(task_logits, encoding, label, y, out_ner_mask)
 
             # backward and step
-            self.overall_model.step(combine_loss, self.domain_clf_optimzir, self.domain_clf_adversial_optimizer, self.source_ner_optimizer)
+            self.overall_model.step(combine_loss, self.domain_clf_optimzer, self.domain_clf_adversial_optimizer, self.source_ner_optimizer)
 
             # evaluate
             domain_acc, ner_acc, ner_f1 = self.overall_model.evaluate(task_logits, encoding, out_ner_mask, label, y)
@@ -103,25 +102,3 @@ class Trainer:
     def train(self, num_epoch, save_path):
         for epoch in range(num_epoch):
             self.train_epoch(epoch)
-
-            # save state dict
-            path = os.path.join(save_path, 'state_%d_epoch.pt' % epoch)
-            self.save_dict(path)
-
-    def save_dict(self, save_path):
-        state_dict = {
-            'p_model': self.p_model.state_dict(),
-            'ner_model': self.ner_model.state_dict(),
-            'p_optimizer': self.p_optimizer.state_dict(),
-            'ner_optimizer': self.ner_optimizer.state_dict()
-        }
-
-        torch.save(state_dict, save_path)
-
-    def load_dict(self, path):
-        state_dict = torch.load(path)
-
-        self.p_model.load_state_dict(state_dict['p_model'])
-        self.ner_model.load_state_dict(state_dict['ner_model'])
-        self.p_optimizer.load_state_dict(state_dict['p_optimizer'])
-        self.ner_optimizer.load_state_dict(state_dict['ner_optimizer'])
