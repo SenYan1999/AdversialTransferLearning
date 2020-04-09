@@ -20,5 +20,5 @@ def init_logger(filename, when='D', backCount=3,
 
     return logger
 
-
 logger = init_logger(filename=args.log_file)
+

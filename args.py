@@ -5,6 +5,9 @@ parser = argparse.ArgumentParser()
 
 # data prepropare
 parser.add_argument('--max_len', default=150, type=int)
+parser.add_argument('--batch_size', default=16, type=int)
+parser.add_argument('--gradient_accumulation_steps', default=1, type=int)
+parser.add_argument('--num_train_epochs', default=10, type=int)
 
 # model
 parser.add_argument('--bert_type', default='pretrained_model/', type=str)
@@ -20,6 +23,8 @@ parser.add_argument('--ner_d_hidden', default=512, type=int)
 parser.add_argument('--ner_num_layers', default=3, type=int)
 parser.add_argument('--ner_dropout', default=0.2, type=float)
 parser.add_argument('--num_tags', default=50, type=int)
+# file dir
+parser.add_argument('--data_dir', default='data/', type=str)
 
 # training processing
 
