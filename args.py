@@ -25,3 +25,5 @@ parser.add_argument('--num_tags', default=50, type=int)
 
 # logging
 parser.add_argument('--log_file', default='log/adversial_transfer.out')
+
+args= parser.parse_args()

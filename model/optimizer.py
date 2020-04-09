@@ -1,6 +1,7 @@
 import math
 import torch
 from torch.optim.optimizer import Optimizer
+from torch.optim import Adam
 
 ## NOTE: copy Adam Optimizer from https://pytorch.org/docs/stable/_modules/torch/optim/adam.html#Adam, 
 ##       adjust the gradient to negative.

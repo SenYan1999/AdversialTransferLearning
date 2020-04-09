@@ -22,13 +22,13 @@ class DomainClassifier(nn.Module):
         )
 
     def forward(self, x):
-        # encoding
+        # encoding (b, l, lstm_encode_dim)
         x_encoded = self.encoder(input_ids=x)
 
-        # max_pool
+        # max_pool (b,  lstm_encode_dim)
         x_pool = self.pooling(x_encoded.permute(0, 2, 1)).squeeze()
 
-        # classify
+        # classify (b,2)
         out = self.classifier(x_pool)
         out = F.log_softmax(out, dim=-1)
 
@@ -46,7 +46,7 @@ class DomainClassifier(nn.Module):
         try:
             scheduler.step()
         except:
-            continue
+            pass
 
         # zeros grad
         adversial_optimizer.zero_grad()

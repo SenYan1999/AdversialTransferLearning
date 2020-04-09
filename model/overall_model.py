@@ -2,13 +2,13 @@ import torch
 import torch.nn as nn
 
 from model import NER
-from mdoel import DomainClassifier
+from model import DomainClassifier
 
 class OverallModel(nn.Module):
     def __init__(self, bert_type, bert_dim, domain_clf_encode_dim, domain_clf_num_layer, \
         seq_len, domain_clf_dropout, num_domains, ner_d_hidden, ner_num_layers, ner_num_tags, ner_dropout):
         super(OverallModel).__init__()
-        self.domain_classifier = DomainClassifier(bert_type, bert_dim, domain_clf_encoe_dim, \
+        self.domain_classifier = DomainClassifier(bert_type, bert_dim, domain_clf_encode_dim, \
             domain_clf_num_layer, seq_len, domain_clf_dropout, num_domains)
         self.source_ner_model = NER(bert_type, bert_dim, domain_clf_encode_dim, ner_d_hidden, \
             ner_num_layers, ner_num_tags, ner_dropout)

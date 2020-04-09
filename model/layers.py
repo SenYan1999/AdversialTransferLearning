@@ -11,7 +11,7 @@ class LSTMEncoder(nn.Module):
         super(LSTMEncoder, self).__init__()
 
         self.enc = nn.LSTM(input_size=in_size, hidden_size=out_size // 2, num_layers=num_layers, batch_first=True,
-                           bidirectional=bidirectional, dropout=dropout if num_layers > 1 else 0.)
+                           bidirectional=bidirectional, dropout=drop_out if num_layers > 1 else 0.)
         self.dropout = drop_out
 
     def forward(self, x, x_len: torch.Tensor):
@@ -49,7 +49,7 @@ class MLP(nn.Module):
         self.activation_2 = nn.ReLU()
         self.layer_3 = nn.Linear(in_size // 4, out_size)
 
-    def forward(x):
+    def forward(self, x):
         out = self.layer_1(x)
         out = self.activation_1(out)
         out = self.layer_2(out)

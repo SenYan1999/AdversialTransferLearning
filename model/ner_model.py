@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import numpy as np
 
 from transformers import BertModel
 from model.layers import LSTMEncoder
@@ -50,7 +51,7 @@ class NER(nn.Module):
         try:
             scheduler.step()
         except:
-            continue
+            pass
 
         optimizer.zero_grad()
 
@@ -64,7 +65,7 @@ class NER(nn.Module):
         predicts = predicts[predicts != -1]
         return predicts
     
-    def evaluate(self, y_pred, y_label):
+    def evaluate(self, y_pred, y_true):
         y_pred = y_pred.numpy()
         y_true = y_true.numpy()
         f1 = f1_score(y_true, y_pred, average="weighted")
