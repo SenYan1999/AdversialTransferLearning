@@ -21,7 +21,7 @@ class NER(nn.Module):
 
         self.bert_encoder = BertModel.from_pretrained(bert_type)
         self.lstm_encoder = LSTMEncoder(d_bert + d_share, d_hidden, num_layers, drop_out)
-        self.classifier = nn.Linaer(d_hidden, num_tags) 
+        self.classifier = nn.Linear(d_hidden, num_tags) 
         self.crf = CRF(num_tags, use_cuda = True if torch.cuda.is_available() else False)
 
     def forward(self, x, shared_inform):
@@ -31,11 +31,12 @@ class NER(nn.Module):
         '''
 
         # get x_encoded from bert layer
-        x_encoded = self.bert_encoder(input_ids=x)
+        x_encoded = self.bert_encoder(input_ids=x)[0]
         
         # combine shared_inform and x_encodded
-        encoding_with_external_inform = torch.cat([x_encoded, shared_inform])
-        encoding_with_external_inform = self.lstm_encoder(encoding_with_external_inform)
+        encoding_with_external_inform = torch.cat([x_encoded, shared_inform], dim=-1)
+        x_len = torch.sum(x != 0, dim=-1)
+        encoding_with_external_inform = self.lstm_encoder(encoding_with_external_inform, x_len)
 
         # get logits
         out = self.classifier(encoding_with_external_inform)

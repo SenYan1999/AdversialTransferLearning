@@ -7,20 +7,29 @@ from model import DomainClassifier
 class OverallModel(nn.Module):
     def __init__(self, bert_type, bert_dim, domain_clf_encode_dim, domain_clf_num_layer, \
         seq_len, domain_clf_dropout, num_domains, ner_d_hidden, ner_num_layers, ner_num_tags, ner_dropout):
-        super(OverallModel).__init__()
+        super(OverallModel, self).__init__()
         self.domain_classifier = DomainClassifier(bert_type, bert_dim, domain_clf_encode_dim, \
-            domain_clf_num_layer, seq_len, domain_clf_dropout, num_domains)
+                domain_clf_num_layer, seq_len, domain_clf_dropout, num_domains)
         self.source_ner_model = NER(bert_type, bert_dim, domain_clf_encode_dim, ner_d_hidden, \
-            ner_num_layers, ner_num_tags, ner_dropout)
+                ner_num_layers, ner_num_tags, ner_dropout)
 
-    def forward(self, x):
-        # domain classifier
-        task_pred, shared_inform = self.domain_classifier(x)
+    def forward(self, x, mode):
+        if mode == 'source':
+            # domain classifier
+            task_pred, shared_inform = self.domain_classifier(x)
 
-        # source model
-        encoding = self.source_ner_model(x, shared_inform)
+            # source model
+            encoding = self.source_ner_model(x, shared_inform)
 
-        return (task_pred, shared_inform, encoding)
+            return (task_pred, shared_inform, encoding)
+        elif mode == 'target':
+            domain_mask = (x_domain != 0).int()
+            # domain classifier
+            task_pred, shared_inform = self.domain_classifier(x)
+
+            return task_pred, shared_inform, None
+        else:
+            raise('Error Mode')
 
     def loss_fn(self, task_pred, encoding, task_truth, ner_truth, out_ner_mask):
         domain_loss = self.domain_classifier.loss_fn(task_pred, task_truth)
