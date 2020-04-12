@@ -67,8 +67,8 @@ class NER(nn.Module):
         return predicts
     
     def evaluate(self, y_pred, y_true):
-        y_pred = y_pred.numpy()
-        y_true = y_true.numpy()
+        y_pred = y_pred.cpu().numpy().reshape(-1)
+        y_true = y_true.cpu().numpy().reshape(-1)
         f1 = f1_score(y_true, y_pred, average="weighted")
         correct = np.sum((y_true == y_pred).astype(int))
         acc = correct / y_pred.shape[0]

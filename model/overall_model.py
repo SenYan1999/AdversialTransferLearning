@@ -23,7 +23,6 @@ class OverallModel(nn.Module):
 
             return (task_pred, shared_inform, encoding)
         elif mode == 'target':
-            domain_mask = (x_domain != 0).int()
             # domain classifier
             task_pred, shared_inform = self.domain_classifier(x)
 
@@ -39,11 +38,11 @@ class OverallModel(nn.Module):
         return domain_loss, source_ner_loss, combined_loss
 
     def step(self, loss, domain_clf_optimizer, domain_adversial_optimizer, source_ner_optimizer, \
-        domain_clf_scheduler, domain_adversial_scheduler=None, source_scheduler=None):
+        domain_clf_scheduler=None, domain_adversial_scheduler=None, source_scheduler=None):
         loss.backward()
         self.domain_classifier.step(domain_adversial_optimizer, domain_clf_optimizer, \
             domain_adversial_scheduler, domain_clf_scheduler)
-        self.source_ner_model.step(loss, source_ner_optimizer, source_scheduler)
+        self.source_ner_model.step(source_ner_optimizer, source_scheduler)
     
     def evaluate(self, task_pred, encoding, out_ner_mask, task_truth, ner_truth):
         # domain classifier
@@ -51,6 +50,7 @@ class OverallModel(nn.Module):
         domain_acc = torch.sum(domain_pred == task_truth) / task_truth.shape[0]
 
         # ner model
-        ner_acc, ner_f1 = 0, 0
+        ner_pred = self.source_ner_model.predict_with_pad(encoding, out_ner_mask)
+        ner_acc, ner_f1 = self.source_ner_model.evaluate(ner_pred, ner_truth)
 
         return (domain_acc.item(), ner_acc, ner_f1)

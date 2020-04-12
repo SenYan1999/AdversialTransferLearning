@@ -36,15 +36,17 @@ class DomainClassifier(nn.Module):
 
     def loss_fn(self, logits, target):
         loss = F.nll_loss(logits, target)
+        return loss
     
-    def step(self, adversial_optimizer, classifier_optimizer, scheduler=None):
+    def step(self, adversial_optimizer, classifier_optimizer, adversial_scheduler=None, classifier_scheduler=None):
         # step optimizer
         adversial_optimizer.step()
         classifier_optimizer.step()
 
         # scheduler if exsits
         try:
-            scheduler.step()
+            adversial_scheduler.step()
+            classifier_scheduler.step()
         except:
             pass
 
